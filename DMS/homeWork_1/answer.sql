@@ -70,16 +70,3 @@ INSERT INTO students (username, marks_id) VALUES
 ("Жеренский", 8),
 ("Владимир", 9),
 ("Богатырный", 10);
-
-# Вывести результат на экран
-
-SELECT
-    students.username,
-    marks.mark,
-    subjects.item_name
-FROM 
-    students
-JOIN 
-    marks ON students.marks_id = marks.id
-JOIN 
-    subjects ON marks.item_id = subjects.id;
