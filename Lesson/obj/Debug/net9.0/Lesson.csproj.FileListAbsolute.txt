@@ -1,0 +1,17 @@
+/home/laxerem/Documents/my_projects/testArea/Lesson/bin/Debug/net9.0/Lesson
+/home/laxerem/Documents/my_projects/testArea/Lesson/bin/Debug/net9.0/Lesson.deps.json
+/home/laxerem/Documents/my_projects/testArea/Lesson/bin/Debug/net9.0/Lesson.runtimeconfig.json
+/home/laxerem/Documents/my_projects/testArea/Lesson/bin/Debug/net9.0/Lesson.dll
+/home/laxerem/Documents/my_projects/testArea/Lesson/bin/Debug/net9.0/Lesson.pdb
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.GeneratedMSBuildEditorConfig.editorconfig
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.AssemblyInfoInputs.cache
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.AssemblyInfo.cs
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.csproj.CoreCompileInputs.cache
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.dll
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/refint/Lesson.dll
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.pdb
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.genruntimeconfig.cache
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/ref/Lesson.dll
+/home/laxerem/Documents/my_projects/testArea/Lesson/bin/Debug/net9.0/FluentValidation.dll
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.csproj.AssemblyReference.cache
+/home/laxerem/Documents/my_projects/testArea/Lesson/obj/Debug/net9.0/Lesson.csproj.Up2Date
