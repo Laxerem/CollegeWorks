@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/laxerem/Documents/my_projects/testArea/Lesson/Lesson.csproj": {}
+    "/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lesson/Lesson.csproj": {}
   },
   "projects": {
-    "/home/laxerem/Documents/my_projects/testArea/Lesson/Lesson.csproj": {
+    "/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lesson/Lesson.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/laxerem/Documents/my_projects/testArea/Lesson/Lesson.csproj",
+        "projectUniqueName": "/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lesson/Lesson.csproj",
         "projectName": "Lesson",
-        "projectPath": "/home/laxerem/Documents/my_projects/testArea/Lesson/Lesson.csproj",
+        "projectPath": "/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lesson/Lesson.csproj",
         "packagesPath": "/home/laxerem/.nuget/packages/",
-        "outputPath": "/home/laxerem/Documents/my_projects/testArea/Lesson/obj/",
+        "outputPath": "/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lesson/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/laxerem/.nuget/NuGet/NuGet.Config"

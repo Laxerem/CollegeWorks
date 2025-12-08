@@ -1,5 +1,6 @@
 using System.Text;
 using Lesson.Interfaces;
+using Lesson.Utils;
 using Lesson.Validators;
 
 namespace Lesson.Entities;
@@ -38,15 +39,11 @@ public class Meal : IJsonable<Meal> {
             throw new Exception(result.Errors[0].ErrorMessage);
         }
 
-        var normalizedJson = jsonString.Replace(" ", "");
-        normalizedJson = normalizedJson.Replace("\n", "");
-        normalizedJson = normalizedJson.Replace("\"", "");
+        var normalizedJson = JsonHelper.NormalizeJson(jsonString).Replace("\"", "");
         normalizedJson = normalizedJson[1..^1];
         
         var jsonArray = normalizedJson.Split(',');
-
         Meal newMeal = new Meal();
-        
         
         for (int i = 0; i < jsonArray.Length; i++) {
             var obj = jsonArray[i].Split(":");
