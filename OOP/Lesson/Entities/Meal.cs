@@ -7,8 +7,8 @@ namespace Lesson.Entities;
 
 public class Meal : IJsonable<Meal> {
     private string id;
-    private string title;
-    private int cost;
+    public string title { get; private set; }
+    public int cost { get; private set; }
 
     private Meal() {
         this.id = "none";
@@ -33,14 +33,7 @@ public class Meal : IJsonable<Meal> {
     }
 
     public static Meal FromJson(string jsonString) {
-        var jsonValidator = new JsonValidator();
-        var result = jsonValidator.Validate(jsonString);
-        if (!result.IsValid) {
-            throw new Exception(result.Errors[0].ErrorMessage);
-        }
-
-        var normalizedJson = JsonHelper.NormalizeJson(jsonString).Replace("\"", "");
-        normalizedJson = normalizedJson[1..^1];
+        var normalizedJson = jsonString[1..^1].Replace("\"", "");
         
         var jsonArray = normalizedJson.Split(',');
         Meal newMeal = new Meal();
@@ -65,11 +58,6 @@ public class Meal : IJsonable<Meal> {
     }
 
     public override string ToString() {
-        var sb = new StringBuilder();
-        sb.AppendLine("MEAL:");
-        sb.AppendLine($"\"id\": \"{id}\",");
-        sb.AppendLine($"\"title\": \"{title}\",");
-        sb.AppendLine($"\"cost\": \"{cost}\"");
-        return sb.ToString();
+        return $"  • {id}: {title} — {cost:F2} руб";
     }
 }

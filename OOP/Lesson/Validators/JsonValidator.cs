@@ -5,6 +5,10 @@ using FluentValidation;
 namespace Lesson.Validators;
 
 public class JsonValidator : AbstractValidator<string> {
+    /// <summary>
+    /// Быстрое валидирование на соответствие с форматом JSON (Не проверяет полностью)
+    /// </summary>
+    /// <exception cref="Exception"></exception>
     public JsonValidator() {
         RuleFor(x => x.Length).NotEmpty().GreaterThan(1).WithMessage("String length must be greater than 1");
         RuleFor(x => x)
@@ -15,11 +19,6 @@ public class JsonValidator : AbstractValidator<string> {
                 
                 if (!str.EndsWith("}") && !str.EndsWith("]")) { // Заканчивается на }
                     throw new Exception("Json string must end with '}' or ']'");
-                }
-                
-                var array = str.Split(":"); // На n-ое количество ключей n-ое количество значений
-                if (array.Length % 2 != 0 & array.Length > 0) {
-                    return false;
                 }
                 
                 return true;

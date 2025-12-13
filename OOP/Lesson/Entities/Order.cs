@@ -7,70 +7,97 @@ using Lesson.Validators;
 
 namespace Lesson.Entities;
 
-public class Order : IJsonable<Order>
-{
-    public readonly DateTime dateTime;
-    public readonly string student;
-    public List<Meal> meals;
+public class Order : IJsonable<Order> {
+    public readonly string Date;
+    public readonly string StudentId;
+    public List<Meal> Meals;
 
-    private Order(DateTime dateTime, string student, List<Meal> meals) {
-        this.dateTime = dateTime;
-        this.student = student;
-        this.meals = meals;
+    private Order(string date, string studentId, List<Meal> meals) {
+        this.Date = date;
+        this.StudentId = studentId;
+        this.Meals = meals;
     }
 
     public static Order Create(string student, List<Meal> meals) {
         return new Order(
-            dateTime: DateTime.Now,
-            student: student,
+            date: "",
+            studentId: student,
             meals: meals
         );
     }
     
-    public static Order Create(DateTime date, string student, List<Meal> meals) {
+    public static Order Create(string date, string student, List<Meal> meals) {
         return new Order(
-            dateTime: date,
-            student: student,
+            date: date,
+            studentId: student,
             meals: meals
         );
     }
 
     public static Order FromJson(string jsonString) {
-        var normalizeJson = JsonHelper.NormalizeJson(jsonString);
+        var normalizeJson = JsonHelper.NormalizeJson(jsonString)[1..^1];
         
-        DateTime dateTime = new();
-        string student = string.Empty;
+        string studentId = string.Empty;
+        string data = string.Empty;
         List<Meal> meals = new();
+        
+        string[] soughtElements = {"StudentID", "data", "meals"};
 
-        for (int i = 0; i < normalizeJson.Length; i++) {
-            if (normalizeJson[i] == '"') {
-                var endIndex = IBaseJsonable.GetElementEndIndex(i, '"', '"', normalizeJson);
-                if (endIndex.HasValue) {
-                    int end = endIndex.Value;
-                    var resultString = normalizeJson.Substring(i, end);
+        foreach (var element in soughtElements) {
+            var startNameIndex = normalizeJson.IndexOf(element, StringComparison.Ordinal);
+            var endNameIndex = IBaseJsonable.GetStringEndIndex(startNameIndex - 1, normalizeJson);
 
-                    switch (resultString) {
-                        case "date":
-                            break;
-                        case "student":
-                            break;
-                        case "meals":
-                            break;
+            if (!endNameIndex.HasValue) {
+                throw new Exception();
+            }
+            
+            var elementName = normalizeJson[startNameIndex..endNameIndex.Value];
+            switch (elementName) {
+                case "StudentID":
+                    studentId = JsonHelper.ReadFirstStringValue(endNameIndex.Value + 1, normalizeJson);
+                    break;
+                case "data":
+                    data = JsonHelper.ReadFirstStringValue(endNameIndex.Value + 1, normalizeJson);
+                    break;
+                case "meals":
+                    for (int i = endNameIndex.Value; i < normalizeJson.Length; i++) {
+                        if (normalizeJson[i] == '[') {
+                            var arrayEndIndex = IBaseJsonable.GetElementEndIndex(i, '[', ']', normalizeJson);
+                            if (!arrayEndIndex.HasValue) {
+                                throw new Exception();
+                            }
+
+                            var end = arrayEndIndex.Value + 1;
+                            var str = normalizeJson[i..end];
+                            meals = JsonHelper.DeserializeJsonList<Meal>(str);
+                        }
                     }
-                }
+                    break;
             }
         }
         
-        return Create(dateTime,  student, meals);
+        return Create(data,  studentId, meals);
     }
 
     public string ToJson() {
         var sp = new StringBuilder();
         sp.Append("{");
-        sp.Append($"\"date\": \"{dateTime:dd.MM.yyyy HH:mm:ss}\",");
-        sp.Append($"\"student\": \"{student}\",");
-        sp.Append($"\"meals\": {JsonHelper.SerializeJsonList(meals)}");
+        sp.Append($"\"StudentID\": \"{StudentId}\",");
+        sp.Append($"\"date\": \"{Date:dd.MM.yyyy HH:mm:ss}\",");
+        sp.Append($"\"meals\": {JsonHelper.SerializeJsonList(Meals)}");
         sp.Append("}");
         return sp.ToString();
+    }
+
+    public override string ToString() {
+        var sb = new StringBuilder();
+        sb.AppendLine($"Order #{StudentId} | {Date:dd.MM.yyyy}");
+        sb.AppendLine("─────────────────────────");
+        foreach (var meal in Meals) {
+            sb.AppendLine(meal.ToString());
+        }
+        sb.AppendLine("─────────────────────────");
+        sb.AppendLine($"Total: {Meals.Sum(m => m.cost):F2} рублей");
+        return sb.ToString();
     }
 }
