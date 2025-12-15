@@ -51,5 +51,5 @@ public interface IBaseJsonable {
 }
 
 public interface IJsonable<T> : IBaseJsonable {
-    public abstract static T FromJson(string jsonString);
+    public abstract static T? FromJson(string jsonString);
 }

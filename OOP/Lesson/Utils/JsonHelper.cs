@@ -34,6 +34,7 @@ public class JsonHelper {
     
     public static string SerializeJsonList(IEnumerable<IBaseJsonable> itemsList) {
         var sb = new StringBuilder();
+        
         sb.Append("[");
         foreach (var item in itemsList) {
             sb.Append(item.ToJson());
@@ -55,7 +56,10 @@ public class JsonHelper {
                 var endIndex = IBaseJsonable.GetElementEndIndex(i, '{', '}', formatedString);
                 if (endIndex.HasValue) {
                     int end = endIndex.Value + 1;
-                    list.Add(T.FromJson(formatedString[i..end]));
+                    var element = T.FromJson(formatedString[i..end]);
+                    if (element != null) {
+                        list.Add(element);
+                    }
                     i = end;
                 }
             }

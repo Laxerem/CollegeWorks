@@ -34,18 +34,27 @@ public class Order : IJsonable<Order> {
         );
     }
 
-    public static Order FromJson(string jsonString) {
+    public static Order? FromJson(string jsonString) {
         var normalizeJson = JsonHelper.NormalizeJson(jsonString)[1..^1];
         
-        string studentId = string.Empty;
-        string data = string.Empty;
+        string? studentId = null;
+        string? data = null;
         List<Meal> meals = new();
         
         string[] soughtElements = {"StudentID", "data", "meals"};
 
         foreach (var element in soughtElements) {
             var startNameIndex = normalizeJson.IndexOf(element, StringComparison.Ordinal);
+            
+            if (startNameIndex == -1) {
+                continue;
+            }
+            
             var endNameIndex = IBaseJsonable.GetStringEndIndex(startNameIndex - 1, normalizeJson);
+            
+            if (!endNameIndex.HasValue) {
+                return null;
+            }
 
             if (!endNameIndex.HasValue) {
                 throw new Exception();
@@ -75,6 +84,10 @@ public class Order : IJsonable<Order> {
                     break;
             }
         }
+
+        if (data == null & studentId == null) {
+            return null;
+        }
         
         return Create(data,  studentId, meals);
     }
@@ -91,10 +104,15 @@ public class Order : IJsonable<Order> {
 
     public override string ToString() {
         var sb = new StringBuilder();
-        sb.AppendLine($"Order #{StudentId} | {Date:dd.MM.yyyy}");
+        sb.AppendLine($"Order: {(StudentId != null ? $"{StudentId}" : "null")} | {(Date != null ? $"{Date:dd.MM.yyyy}" : "null")}");
         sb.AppendLine("─────────────────────────");
-        foreach (var meal in Meals) {
-            sb.AppendLine(meal.ToString());
+        if (Meals.Any()) {
+            foreach (var meal in Meals) {
+                sb.AppendLine(meal.ToString());
+            }   
+        }
+        else {
+            sb.AppendLine("null");
         }
         sb.AppendLine("─────────────────────────");
         sb.AppendLine($"Total: {Meals.Sum(m => m.cost):F2} рублей");
