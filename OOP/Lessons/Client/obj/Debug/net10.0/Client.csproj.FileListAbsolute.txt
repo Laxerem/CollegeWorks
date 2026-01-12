@@ -1,0 +1,15 @@
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/bin/Debug/net10.0/Client
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/bin/Debug/net10.0/Client.deps.json
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/bin/Debug/net10.0/Client.runtimeconfig.json
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/bin/Debug/net10.0/Client.dll
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/bin/Debug/net10.0/Client.pdb
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.GeneratedMSBuildEditorConfig.editorconfig
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.AssemblyInfoInputs.cache
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.AssemblyInfo.cs
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.csproj.CoreCompileInputs.cache
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.sourcelink.json
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.dll
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/refint/Client.dll
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.pdb
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/Client.genruntimeconfig.cache
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Client/obj/Debug/net10.0/ref/Client.dll
