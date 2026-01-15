@@ -10,6 +10,18 @@ public class SockClient {
     }
 
     public async Task StartAsync() {
+        while (true) {
+            try {
+                await ExecuteProgramAsync();
+            }
+            catch (Exception e) {
+                Console.WriteLine("Shutting down...");
+                return;
+            }
+        }
+    }
+
+    private async Task ExecuteProgramAsync() {
         Console.WriteLine($"Введите ip адрес сервера: ");
         var hostName = Console.ReadLine();
         var client = new TcpClient(hostName, _port);
@@ -27,6 +39,9 @@ public class SockClient {
             var responseMessage = await streamReader.ReadLineAsync();
             if (responseMessage is null) {
                 Console.WriteLine("Сервер закрыл соединение");
+                if (requestMessage == "stop") {
+                    throw new Exception();
+                }
                 return;
             }
             
