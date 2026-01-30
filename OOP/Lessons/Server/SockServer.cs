@@ -30,7 +30,9 @@ public class SockServer {
                     return;
                 }   
             }
-            return;
+            else {
+                return;   
+            }
         }
     }
 
