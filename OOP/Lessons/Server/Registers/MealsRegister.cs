@@ -18,4 +18,10 @@ public class MealsRegister {
     public List<Meal> GetAllMeals() {
         return _meals.Values.ToList();
     }
+
+    public void AddMeal(Meal meal) {
+        if (meal.Id != null) {
+            _meals[meal.Id] = meal;
+        }
+    }
 }

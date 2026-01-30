@@ -36,4 +36,22 @@ public class JsonFileHelper : BaseFileHelper {
         var objList = JsonHelper.DeserializeJsonList<T>(jsonString);
         return objList;
     }
+
+    public static int AppendJsonToList(string path, IBaseJsonable obj) {
+        var jsonString = ReadFile(path).Trim();
+        ValidateJson(jsonString);
+
+        // Удаляем закрывающую скобку массива и добавляем новый элемент
+        if (jsonString.EndsWith("]")) {
+            var newJson = jsonString[..^1];
+            // Проверяем, есть ли уже элементы в массиве
+            if (newJson.TrimEnd().EndsWith("[")) {
+                newJson += obj.ToJson() + "]";
+            } else {
+                newJson += "," + obj.ToJson() + "]";
+            }
+            return WriteToFile(path, newJson);
+        }
+        return 1;
+    }
 }

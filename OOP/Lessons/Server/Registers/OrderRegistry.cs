@@ -16,4 +16,8 @@ public class OrderRegistry {
     public List<Order> GetAllOrders() {
         return _orders.Values.ToList();
     }
+
+    public void AddOrder(Order order) {
+        _orders[order.StudentId] = order;
+    }
 }

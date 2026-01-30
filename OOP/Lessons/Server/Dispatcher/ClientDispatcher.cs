@@ -42,6 +42,16 @@ public class ClientDispatcher {
                 var tokens =  message.Split(' ');
                 
                 switch (tokens[0]) {
+                    case "help":
+                        Console.WriteLine("КОМАНДА              ПАРАМЕТРЫ    ОПИСАНИЕ");
+                        Console.WriteLine("──────────────────────────────────────────────────────────");
+                        Console.WriteLine("get_orders           —            Получить список всех заказов");
+                        Console.WriteLine("get_meals            —            Получить список всех блюд");
+                        Console.WriteLine("get_order_by_id      <id>         Получить заказ по ID");
+                        Console.WriteLine("get_meal_by_id       <id>         Получить блюдо по ID");
+                        Console.WriteLine("exit                 —            Отключиться от сервера");
+                        Console.WriteLine("stop                 —            Остановить сервер");
+                        break;
                     case "get_orders":
                         var orders = _controller.GetAllOrders();
                         var stringResponse1 = JsonHelper.SerializeJsonList(orders);
@@ -65,6 +75,16 @@ public class ClientDispatcher {
                         var mealResponse = meal.ToJson();
 
                         await streamWriter.WriteLineAsync(mealResponse);
+                        break;
+                    case "add_meal":
+                        var mealJson = string.Join(" ", tokens.Skip(1));
+                        var addMealResult = _controller.AddMeal(mealJson);
+                        await streamWriter.WriteLineAsync(addMealResult ? "Meal added" : "Failed to add meal");
+                        break;
+                    case "add_order":
+                        var orderJson = string.Join(" ", tokens.Skip(1));
+                        var addOrderResult = _controller.AddOrder(orderJson);
+                        await streamWriter.WriteLineAsync(addOrderResult ? "Order added" : "Failed to add order");
                         break;
                     case "exit":
                         return;

@@ -57,4 +57,24 @@ public class ClientController {
         }
         return meal;
     }
+
+    public bool AddMeal(string mealJson) {
+        var meal = Meal.FromJson(mealJson);
+        if (meal == null) {
+            throw new ArgumentException("Invalid meal JSON");
+        }
+        _meals.AddMeal(meal);
+        JsonFileHelper.AppendJsonToList("Menu1.json", meal);
+        return true;
+    }
+
+    public bool AddOrder(string orderJson) {
+        var order = Order.FromJson(orderJson);
+        if (order == null) {
+            throw new ArgumentException("Invalid order JSON");
+        }
+        _orders.AddOrder(order);
+        JsonFileHelper.AppendJsonToList("Orders1.json", order);
+        return true;
+    }
 }

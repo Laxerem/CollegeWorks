@@ -12,8 +12,8 @@ using Server.Registers;
 
 public class Program {
     public async static Task Main(string[] args) {
-        var orders = JsonFileHelper.ReadJsonItemsList<Order>("../../../Orders1.json");
-        var meals = JsonFileHelper.ReadJsonItemsList<Meal>("../../../Menu1.json");
+        var orders = JsonFileHelper.ReadJsonItemsList<Order>("Orders1.json");
+        var meals = JsonFileHelper.ReadJsonItemsList<Meal>("Menu1.json");
         var orderRegistry = new OrderRegistry(orders);
         var mealRegistry = new MealsRegister(meals);
         
