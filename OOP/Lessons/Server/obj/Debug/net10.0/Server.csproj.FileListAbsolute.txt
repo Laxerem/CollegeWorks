@@ -13,3 +13,6 @@
 /home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Server/obj/Debug/net10.0/Server.pdb
 /home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Server/obj/Debug/net10.0/Server.genruntimeconfig.cache
 /home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Server/obj/Debug/net10.0/ref/Server.dll
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Server/bin/Debug/net10.0/FluentValidation.dll
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Server/obj/Debug/net10.0/Server.csproj.AssemblyReference.cache
+/home/laxerem/Documents/my_projects/CollegeWorks/OOP/Lessons/Server/obj/Debug/net10.0/Server.csproj.Up2Date
