@@ -2,7 +2,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from database.repositories.repository import Repository
+from database.repositories.common.repository import Repository
 from database.entities.student import Student
 
 if TYPE_CHECKING:
@@ -15,7 +15,6 @@ class StudentsRepository(Repository):
 
     def initialize(self) -> None:
         database = self.__db.connect()
-        database.execute('PRAGMA foreign_keys = ON') # Enable foreign key constraints
         cursor = database.cursor()
 
         cursor.execute('''
@@ -46,9 +45,14 @@ class StudentsRepository(Repository):
         database = self.__db.connect()
         cursor = database.cursor()
 
+        cursor.execute('SELECT id FROM Groups WHERE id = ?', (group_id,))
+        if cursor.fetchone() is None:
+            database.close()
+            raise ValueError(f"Группа с id {group_id} не существует")
+
         string_data = birthday.strftime('%Y-%m-%d')
 
-        cursor.execute(f'''
+        cursor.execute('''
         INSERT INTO Students (group_id, name, birthday) VALUES (?, ?, ?)
         ''', (group_id, name, string_data))
         database.commit()
@@ -107,6 +111,31 @@ class StudentsRepository(Repository):
             birthday = datetime.strptime(birthday_string, '%Y-%m-%d').date()
             students.append(Student(id, name, birthday, group_id))
             
+        database.close()
+        return students
+    
+    def get_students_by_special_code(self, code: str) -> list[Student]:
+        database = self.__db.connect()
+        cursor = database.cursor()
+
+        cursor.execute('''
+                       SELECT s.*
+                       FROM Students s
+                       INNER JOIN Groups g ON s.group_id = g.id
+                       WHERE g.speciality_code LIKE ?
+                       ''', (f'{code}.%',))
+        rows = cursor.fetchall()
+
+        students = []
+        for row in rows:
+            id = row[0]
+            group_id = row[1]
+            name = row[2]
+            birthday_string = row[3]
+
+            birthday = datetime.strptime(birthday_string, '%Y-%m-%d').date()
+            students.append(Student(id, name, birthday, group_id))
+
         database.close()
         return students
 

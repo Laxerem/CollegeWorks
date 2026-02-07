@@ -8,7 +8,7 @@ class Student:
         self.birthday = birthday
         self.group_id = group_id
 
-    def to_string(self) -> None:
+    def to_string(self) -> str:
         formated_data = self.birthday.strftime('%Y-%m-%d')
         return (f"ID: {self.id}\n"
                 f"Name: {self.name}\n"

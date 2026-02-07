@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from database.entities.group import Group
-from database.repositories.repository import Repository
+from database.repositories.common.repository import Repository
 
 if TYPE_CHECKING:
     from database.database import DataBase
@@ -18,8 +18,10 @@ class GroupsRepository(Repository):
 
         cursor.execute('''
         CREATE TABLE IF NOT EXISTS Groups (
-            year INTEGER INTEGER PRIMARY KEY,
-            name TEXT NOT NULL
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            year INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            speciality_code TEXT NOT NULL
         )
         ''')
 
@@ -37,13 +39,13 @@ class GroupsRepository(Repository):
         database.commit()
         database.close()
 
-    def add_group(self, name: str, year: int) -> int:
+    def add_group(self, name: str, year: int, speciality_code: str) -> int:
         database = self.__db.connect()
         cursor = database.cursor()
 
         cursor.execute('''
-        INSERT INTO Groups (name, year) VALUES (?, ?)
-        ''', (name, year))
+        INSERT INTO Groups (name, year, speciality_code) VALUES (?, ?, ?)
+        ''', (name, year, speciality_code))
         database.commit()
         database.close()
 
@@ -62,8 +64,9 @@ class GroupsRepository(Repository):
             return None
 
         id = row[0]
-        name = row[1]
-        year = row[2]
+        year = row[1]
+        name = row[2]
+        speciality_code = row[3]
 
         database.close()
-        return Group(id, name, year)
+        return Group(id, name, year, speciality_code)
