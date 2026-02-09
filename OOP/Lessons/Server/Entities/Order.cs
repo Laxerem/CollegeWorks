@@ -36,10 +36,10 @@ public class Order : IJsonable<Order> {
         var normalizeJson = JsonHelper.NormalizeJson(jsonString)[1..^1];
         
         string? studentId = null;
-        string? data = null;
+        string? date = null;
         List<Meal> meals = new();
         
-        string[] soughtElements = {"StudentID", "data", "meals"};
+        string[] soughtElements = {"StudentID", "date", "meals"};
 
         foreach (var element in soughtElements) {
             var startNameIndex = normalizeJson.IndexOf(element, StringComparison.Ordinal);
@@ -63,8 +63,8 @@ public class Order : IJsonable<Order> {
                 case "StudentID":
                     studentId = JsonHelper.ReadFirstStringValue(endNameIndex.Value + 1, normalizeJson);
                     break;
-                case "data":
-                    data = JsonHelper.ReadFirstStringValue(endNameIndex.Value + 1, normalizeJson);
+                case "date":
+                    date = JsonHelper.ReadFirstStringValue(endNameIndex.Value + 1, normalizeJson);
                     break;
                 case "meals":
                     for (int i = endNameIndex.Value; i < normalizeJson.Length; i++) {
@@ -83,18 +83,18 @@ public class Order : IJsonable<Order> {
             }
         }
 
-        if (data == null & studentId == null) {
+        if (date == null & studentId == null) {
             return null;
         }
-        
-        return Create(data,  studentId, meals);
+
+        return Create(date,  studentId, meals);
     }
 
     public string ToJson() {
         var sp = new StringBuilder();
         sp.Append("{");
         sp.Append($"\"StudentID\": \"{StudentId}\",");
-        sp.Append($"\"date\": \"{Date:dd.MM.yyyy HH:mm:ss}\",");
+        sp.Append($"\"date\": \"{Date}\",");
         sp.Append($"\"meals\": {JsonHelper.SerializeJsonList(Meals)}");
         sp.Append("}");
         return sp.ToString();
@@ -102,7 +102,7 @@ public class Order : IJsonable<Order> {
 
     public override string ToString() {
         var sb = new StringBuilder();
-        sb.AppendLine($"Order: {(StudentId != null ? $"{StudentId}" : "null")} | {(Date != null ? $"{Date:dd.MM.yyyy}" : "null")}");
+        sb.AppendLine($"Order: {(StudentId != null ? $"{StudentId}" : "null")} | {(Date != null ? $"{Date}" : "null")}");
         sb.AppendLine("─────────────────────────");
         if (Meals.Any()) {
             foreach (var meal in Meals) {
