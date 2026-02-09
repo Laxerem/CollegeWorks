@@ -1,5 +1,6 @@
 using System.Text;
 using Server.Interfaces;
+using Server.Utils;
 
 namespace Server.Entities;
 
@@ -31,26 +32,33 @@ public class Meal : IJsonable<Meal> {
     }
 
     public static Meal? FromJson(string jsonString) {
-        var normalizedJson = jsonString[1..^1].Replace("\"", "");
-        
+        // Валидируем и нормализуем JSON
+        var normalizedJson = JsonHelper.NormalizeJson(jsonString);
+
+        // Убираем внешние фигурные скобки и кавычки
+        normalizedJson = normalizedJson[1..^1].Replace("\"", "");
+
         var jsonArray = normalizedJson.Split(',');
 
         string? mealId = null;
         string? mealTitle = null;
         int? mealCost = null;
-        
+
         for (int i = 0; i < jsonArray.Length; i++) {
             var obj = jsonArray[i].Split(":");
-            switch (obj[0]) {
+            var key = obj[0].Trim();
+            var value = obj.Length > 1 ? string.Join(":", obj.Skip(1)).Trim() : "";
+
+            switch (key) {
                 case "id":
-                    mealId = obj[1];
+                    mealId = value;
                     break;
                 case "title":
-                    mealTitle = obj[1];
+                    mealTitle = value;
                     break;
                 case "cost":
                     try {
-                        mealCost = int.Parse(obj[1]);
+                        mealCost = int.Parse(value);
                     }
                     catch (Exception) {
                         mealCost = null;
@@ -60,7 +68,7 @@ public class Meal : IJsonable<Meal> {
                     return null;
             }
         }
-        
+
         return new Meal(mealId, mealTitle, mealCost.Value);
     }
 

@@ -20,4 +20,8 @@ public class OrderRegistry {
     public void AddOrder(Order order) {
         _orders[order.StudentId] = order;
     }
+
+    public bool RemoveOrder(string studentId) {
+        return _orders.Remove(studentId);
+    }
 }

@@ -6,9 +6,11 @@ public class MealsRegister {
     private Dictionary<string, Meal> _meals;
 
     public MealsRegister(List<Meal> meals) {
-        _meals = meals
-            .Where(m => m.Id != null)
-            .ToDictionary(meal => meal.Id!);
+        _meals = new Dictionary<string, Meal>();
+        foreach (var meal in meals.Where(m => m.Id != null)) {
+            // Если блюдо с таким ID уже есть, перезаписываем (берём последнее)
+            _meals[meal.Id!] = meal;
+        }
     }
 
     public Meal? GetMeal(string mealId) {
@@ -23,5 +25,9 @@ public class MealsRegister {
         if (meal.Id != null) {
             _meals[meal.Id] = meal;
         }
+    }
+
+    public bool RemoveMeal(string mealId) {
+        return _meals.Remove(mealId);
     }
 }

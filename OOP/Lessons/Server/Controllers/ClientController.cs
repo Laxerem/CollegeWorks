@@ -63,6 +63,12 @@ public class ClientController {
         if (meal == null) {
             throw new ArgumentException("Invalid meal JSON");
         }
+
+        // Проверяем, существует ли блюдо с таким ID
+        if (meal.Id != null && _meals.GetMeal(meal.Id) != null) {
+            throw new ArgumentException($"Meal with ID '{meal.Id}' already exists");
+        }
+
         _meals.AddMeal(meal);
         JsonFileHelper.AppendJsonToList("Menu1.json", meal);
         return true;
@@ -73,8 +79,38 @@ public class ClientController {
         if (order == null) {
             throw new ArgumentException("Invalid order JSON");
         }
+
+        // Проверяем, существует ли заказ с таким StudentID
+        if (_orders.GetOrder(order.StudentId) != null) {
+            throw new ArgumentException($"Order for student '{order.StudentId}' already exists");
+        }
+
         _orders.AddOrder(order);
         JsonFileHelper.AppendJsonToList("Orders1.json", order);
+        return true;
+    }
+
+    public bool DeleteMeal(string mealId) {
+        var meal = _meals.GetMeal(mealId);
+        if (meal == null) {
+            throw new NotFoundException($"Meal with ID '{mealId}' not found");
+        }
+
+        _meals.RemoveMeal(mealId);
+        // Перезаписываем файл со всеми оставшимися блюдами
+        JsonFileHelper.WriteJsonItemsList("Menu1.json", _meals.GetAllMeals());
+        return true;
+    }
+
+    public bool DeleteOrder(string studentId) {
+        var order = _orders.GetOrder(studentId);
+        if (order == null) {
+            throw new NotFoundException($"Order for student '{studentId}' not found");
+        }
+
+        _orders.RemoveOrder(studentId);
+        // Перезаписываем файл со всеми оставшимися заказами
+        JsonFileHelper.WriteJsonItemsList("Orders1.json", _orders.GetAllOrders());
         return true;
     }
 }
