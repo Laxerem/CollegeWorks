@@ -2,31 +2,30 @@ using System.Text;
 using Server.Interfaces;
 using Server.Utils;
 
-namespace Server.Entities;
+namespace Server.Database.Entities;
 
 public class Meal : IJsonable<Meal> {
-    public string? Id { get; private set; }
-    public string? title { get; private set; }
-    public int? cost { get; private set; }
+    public int Id { get; private set; }
+    public string Title { get; private set; }
+    public int Cost { get; private set; }
 
     private Meal() {
-        this.Id = "none";
-        this.title = "none";
-        this.cost = 0;
+        this.Title = "none";
+        this.Cost = 0;
     }
 
-    public Meal(string? id, string? title, int? cost) {
+    public Meal(int id, string title, int cost) {
         this.Id = id;
-        this.title = title;
-        this.cost = cost;
+        this.Title = title;
+        this.Cost = cost;
     }
 
     public string ToJson() {
         var sp = new StringBuilder();
         sp.Append("{");
         sp.Append($"\"id\": \"{Id}\",");
-        sp.Append($"\"title\": \"{title}\",");
-        sp.Append($"\"cost\": {cost}");
+        sp.Append($"\"Title\": \"{Title}\",");
+        sp.Append($"\"Cost\": {Cost}");
         sp.Append("}");
         return sp.ToString();
     }
@@ -40,7 +39,7 @@ public class Meal : IJsonable<Meal> {
 
         var jsonArray = normalizedJson.Split(',');
 
-        string? mealId = null;
+        int? mealId = null;
         string? mealTitle = null;
         int? mealCost = null;
 
@@ -50,29 +49,24 @@ public class Meal : IJsonable<Meal> {
             var value = obj.Length > 1 ? string.Join(":", obj.Skip(1)).Trim() : "";
 
             switch (key) {
-                case "id":
-                    mealId = value;
+                case "Id":
+                    mealId = int.Parse(value);
                     break;
-                case "title":
+                case "Title":
                     mealTitle = value;
                     break;
-                case "cost":
-                    try {
-                        mealCost = int.Parse(value);
-                    }
-                    catch (Exception) {
-                        mealCost = null;
-                    }
+                case "Cost":
+                    mealCost = int.Parse(value);
                     break;
                 default:
                     return null;
             }
         }
 
-        return new Meal(mealId, mealTitle, mealCost.Value);
+        return new Meal(mealId.Value, mealTitle, mealCost.Value);
     }
 
     public override string ToString() {
-        return $"  • {(Id != null ? $"\"{Id}\"" : "null")}: {(title != null ? $"\"{title}\"" : "null")} — {(cost != null ? $"\"{cost}\"" : "null")} руб";
+        return $"  • {(Id != null ? $"\"{Id}\"" : "null")}: {(Title != null ? $"\"{Title}\"" : "null")} — {(Cost != null ? $"\"{Cost}\"" : "null")} руб";
     }
 }

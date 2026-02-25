@@ -1,5 +1,6 @@
 using System.Text;
 using Lesson.Utils;
+using Server.Database.Entities;
 using Server.Interfaces;
 using Server.Utils;
 
@@ -113,7 +114,7 @@ public class Order : IJsonable<Order> {
             sb.AppendLine("null");
         }
         sb.AppendLine("─────────────────────────");
-        sb.AppendLine($"Total: {Meals.Sum(m => m.cost):F2} рублей");
+        sb.AppendLine($"Total: {Meals.Sum(m => m.Cost):F2} рублей");
         return sb.ToString();
     }
 }

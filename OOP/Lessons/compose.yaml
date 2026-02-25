@@ -1,0 +1,10 @@
+﻿services:
+  database:
+    image: postgres:18
+    container_name: lesson_postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: lesson
+    ports:
+      - 5432:5432
