@@ -37,18 +37,26 @@ public class DbContext {
     public void ExecuteWork(string sql, List<NpgsqlParameter>? parameters = null, Action<NpgsqlDataReader>? work = null) {
         using (var conn = GetConnection()) {
             conn.Open();
-            using (var cmd = new NpgsqlCommand(sql, conn)) {
-                if (parameters != null) {
-                    parameters.ForEach(p => cmd.Parameters.Add(p));
-                }
-                if (work != null) {
-                    using (var reader = cmd.ExecuteReader()) {
-                        work(reader);
+            using var transcation = conn.BeginTransaction();
+            try {
+                using (var cmd = new NpgsqlCommand(sql, conn)) {
+                    if (parameters != null) {
+                        parameters.ForEach(p => cmd.Parameters.Add(p));
                     }
+                    if (work != null) {
+                        using (var reader = cmd.ExecuteReader()) {
+                            work(reader);
+                        }
+                    }
+                    else {
+                        cmd.ExecuteNonQuery();
+                    }
+                    transcation.Commit();
                 }
-                else {
-                    cmd.ExecuteNonQuery();
-                }
+            }
+            catch {
+                transcation.Rollback();
+                throw;
             }
         }
     }

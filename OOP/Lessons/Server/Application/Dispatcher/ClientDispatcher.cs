@@ -1,169 +1,184 @@
-// using System.Net.Sockets;
-// using System.Text;
-// using System.Text.Json;
-// using Objects.Dto;
-// using Objects.Exceptions;
-// using Server.Controllers;
-// using Server.Entities;
-// using Server.Utils;
-//
-// namespace Server.Dispatcher;
-//
-// public class ClientDispatcher {
-//     private readonly ClientController _controller;
-//     public event Action StopCommand;
-//     
-//     public ClientDispatcher(ClientController controller) {
-//         _controller = controller;
-//     }
-//
-//     private async Task SendException(Exception ex, StreamWriter streamWriter) {
-//         var response = string.Empty;
-//         if (ex is BaseException) {
-//             var exception = (BaseException)ex;
-//             response = JsonSerializer.Serialize(new ServerResponse(exception.Code, exception.Message));
-//             await streamWriter.WriteLineAsync(response);
-//             return;
-//         }
-//         Console.WriteLine($"ERROR: {ex.GetType().Name}: {ex.Message}");
-//         Console.WriteLine($"STACK TRACE: {ex.StackTrace}");
-//         response = JsonSerializer.Serialize(new ServerResponse(400, $"Unknown error: {ex.Message}"));
-//         await streamWriter.WriteLineAsync(response);
-//     }
-//
-//     public async Task StartDispatchAsync(TcpClient client) {
-//         var stream = client.GetStream();
-//         using var streamReader = new StreamReader(stream);
-//         using var streamWriter = new StreamWriter(stream);
-//         streamWriter.AutoFlush = true;
-//
-//         try {
-//             while (true) {
-//                 var message = await streamReader.ReadLineAsync();
-//                 Console.WriteLine("MESSAGE: " + message);
-//                 
-//                 var tokens =  message.Split(' ');
-//                 
-//                 switch (tokens[0]) {
-//                     case "help":
-//                         Console.WriteLine("КОМАНДА              ПАРАМЕТРЫ                                           ОПИСАНИЕ");
-//                         Console.WriteLine("─────────────────────────────────────────────────────────────────────────────────────────");
-//                         Console.WriteLine("get_orders           —                                                   Получить список всех заказов");
-//                         Console.WriteLine("get_meals            —                                                   Получить список всех блюд");
-//                         Console.WriteLine("get_order_by_id      {\"id\": \"<id>\"}                                     Получить заказ по ID");
-//                         Console.WriteLine("get_meal_by_id       {\"id\": \"<id>\"}                                     Получить блюдо по ID");
-//                         Console.WriteLine("add_meal             {\"id\": \"<id>\", \"Title\": \"<Title>\", \"Cost\": <Cost>}   Добавить новое блюдо");
-//                         Console.WriteLine("add_order            {\"StudentID\": \"<id>\", \"date\": \"<date>\", \"meals\": [...]}  Добавить новый заказ");
-//                         Console.WriteLine("delete_meal          {\"id\": \"<id>\"}                                     Удалить блюдо по ID");
-//                         Console.WriteLine("delete_order         {\"id\": \"<id>\"}                                     Удалить заказ по ID");
-//                         Console.WriteLine("exit                 —                                                   Отключиться от сервера");
-//                         Console.WriteLine("stop                 —                                                   Остановить сервер");
-//                         await streamWriter.WriteLineAsync("");
-//                         break;
-//                     case "get_orders":
-//                         var orders = _controller.GetAllOrders();
-//                         var stringResponse1 = JsonHelper.SerializeJsonList(orders);
-//                         
-//                         await streamWriter.WriteLineAsync(stringResponse1);
-//                         break;
-//                     case "get_meals":
-//                         var meals = _controller.GetAllMeals();
-//                         var stringResponse2 = JsonHelper.SerializeJsonList(meals);
-//
-//                         await streamWriter.WriteLineAsync(stringResponse2);
-//                         break;
-//                     case "get_order_by_id":
-//                         try {
-//                             var orderJsonStr = string.Join(" ", tokens.Skip(1));
-//                             using (var orderDoc = JsonDocument.Parse(orderJsonStr)) {
-//                                 var orderId = orderDoc.RootElement.GetProperty("id").GetString();
-//                                 var order = _controller.GetOrderById(orderId);
-//                                 var orderResponse = order.ToJson();
-//
-//                                 await streamWriter.WriteLineAsync(orderResponse);
-//                             }
-//                         }
-//                         catch (Exception ex) {
-//                             await SendException(ex, streamWriter);
-//                         }
-//                         break;
-//                     case "get_meal_by_id":
-//                         try {
-//                             var mealJsonStr = string.Join(" ", tokens.Skip(1));
-//                             using (var mealDoc = JsonDocument.Parse(mealJsonStr)) {
-//                                 var mealId = mealDoc.RootElement.GetProperty("id").GetString();
-//                                 var meal = _controller.GetMealById(mealId);
-//                                 var mealResponse = meal.ToJson();
-//
-//                                 await streamWriter.WriteLineAsync(mealResponse);
-//                             }
-//                         }
-//                         catch (Exception ex) {
-//                             await SendException(ex, streamWriter);
-//                         }
-//                         break;
-//                     case "add_meal":
-//                         try {
-//                             var mealJson = string.Join(" ", tokens.Skip(1));
-//                             var addMealResult = _controller.AddMeal(mealJson);
-//                             await streamWriter.WriteLineAsync(addMealResult ? "Meal added successfully" : "Failed to add meal");
-//                         }
-//                         catch (Exception ex) {
-//                             await SendException(ex, streamWriter);
-//                         }
-//                         break;
-//                     case "add_order":
-//                         try {
-//                             var orderJson = string.Join(" ", tokens.Skip(1));
-//                             var addOrderResult = _controller.AddOrder(orderJson);
-//                             await streamWriter.WriteLineAsync(addOrderResult ? "Order added successfully" : "Failed to add order");
-//                         }
-//                         catch (Exception ex) {
-//                             await SendException(ex, streamWriter);
-//                         }
-//                         break;
-//                     case "delete_meal":
-//                         try {
-//                             var deleteMealJsonStr = string.Join(" ", tokens.Skip(1));
-//                             using (var deleteMealDoc = JsonDocument.Parse(deleteMealJsonStr)) {
-//                                 var deleteMealId = deleteMealDoc.RootElement.GetProperty("id").GetString();
-//                                 var deleteMealResult = _controller.DeleteMeal(deleteMealId);
-//                                 await streamWriter.WriteLineAsync(deleteMealResult ? "Meal deleted successfully" : "Failed to delete meal");
-//                             }
-//                         }
-//                         catch (Exception ex) {
-//                             await SendException(ex, streamWriter);
-//                         }
-//                         break;
-//                     case "delete_order":
-//                         try {
-//                             var deleteOrderJsonStr = string.Join(" ", tokens.Skip(1));
-//                             using (var deleteOrderDoc = JsonDocument.Parse(deleteOrderJsonStr)) {
-//                                 var deleteOrderId = deleteOrderDoc.RootElement.GetProperty("id").GetString();
-//                                 var deleteOrderResult = _controller.DeleteOrder(deleteOrderId);
-//                                 await streamWriter.WriteLineAsync(deleteOrderResult ? "Order deleted successfully" : "Failed to delete order");
-//                             }
-//                         }
-//                         catch (Exception ex) {
-//                             await SendException(ex, streamWriter);
-//                         }
-//                         break;
-//                     case "exit":
-//                         return;
-//                     case "stop":
-//                         StopCommand?.Invoke();
-//                         return;
-//                     default:
-//                         await streamWriter.WriteLineAsync(message);
-//                         break;
-//                 }
-//             }
-//         }
-//         catch (Exception ex) {
-//             await SendException(ex, streamWriter);
-//         }
-//         finally {
-//             client.Close();
-//         }
-//     }
-// }
+using System.Net.Sockets;
+using Objects.Dto;
+using Objects.Exceptions;
+using Server.Controllers;
+using Server.Interfaces;
+using Server.Utils;
+
+namespace Server.Dispatcher;
+
+public class ClientDispatcher {
+    private readonly ClientController _controller;
+    public event Action? StopCommand;
+
+    public ClientDispatcher(ClientController controller) {
+        _controller = controller;
+    }
+
+    public async Task StartDispatchAsync(TcpClient client) {
+        var stream = client.GetStream();
+        using var reader = new StreamReader(stream);
+        using var writer = new StreamWriter(stream) { AutoFlush = true };
+
+        try {
+            while (true) {
+                var message = await reader.ReadLineAsync();
+                if (message == null) break;
+
+                Console.WriteLine("MESSAGE: " + message);
+
+                var parts = message.Split(' ', 2);
+                var command = parts[0];
+                var json = parts.Length > 1 ? parts[1] : "";
+
+                await HandleCommand(command, json, writer);
+            }
+        } catch (Exception ex) {
+            await SendException(ex, writer);
+        } finally {
+            client.Close();
+        }
+    }
+
+    private async Task HandleCommand(string command, string json, StreamWriter writer) {
+        switch (command) {
+            case "help":
+                await writer.WriteLineAsync(GetHelpText());
+                break;
+
+            case "get_meals": {
+                var meals = _controller.GetAllMeals();
+                await writer.WriteLineAsync(SerializeList(meals));
+                break;
+            }
+
+            case "get_meal_by_id": {
+                try {
+                    var id = JsonHelper.ReadIntByKey("id", json)
+                        ?? throw new ArgumentException("Missing 'id' in request");
+                    var meal = _controller.GetMealById(id);
+                    await writer.WriteLineAsync(JsonHelper.Serialize(meal));
+                } catch (Exception ex) {
+                    await SendException(ex, writer);
+                }
+                break;
+            }
+
+            case "add_meal": {
+                try {
+                    var title = JsonHelper.ReadStringByKey("Title", json)
+                        ?? throw new ArgumentException("Missing 'Title' in request");
+                    var cost = JsonHelper.ReadIntByKey("Cost", json)
+                        ?? throw new ArgumentException("Missing 'Cost' in request");
+                    var meal = _controller.AddMeal(title, cost);
+                    await writer.WriteLineAsync(JsonHelper.Serialize(meal));
+                } catch (Exception ex) {
+                    await SendException(ex, writer);
+                }
+                break;
+            }
+
+            case "delete_meal": {
+                try {
+                    var id = JsonHelper.ReadIntByKey("id", json)
+                        ?? throw new ArgumentException("Missing 'id' in request");
+                    _controller.DeleteMeal(id);
+                    await SendResponse(200, "Meal deleted successfully", writer);
+                } catch (Exception ex) {
+                    await SendException(ex, writer);
+                }
+                break;
+            }
+
+            case "get_orders": {
+                var orders = _controller.GetAllOrders();
+                await writer.WriteLineAsync(SerializeList(orders));
+                break;
+            }
+
+            case "get_order_by_id": {
+                try {
+                    var id = JsonHelper.ReadIntByKey("id", json)
+                        ?? throw new ArgumentException("Missing 'id' in request");
+                    var order = _controller.GetOrderById(id);
+                    await writer.WriteLineAsync(JsonHelper.Serialize(order));
+                } catch (Exception ex) {
+                    await SendException(ex, writer);
+                }
+                break;
+            }
+
+            case "add_order": {
+                try {
+                    var studentId = JsonHelper.ReadStringByKey("StudentID", json)
+                        ?? throw new ArgumentException("Missing 'StudentID' in request");
+                    var date = JsonHelper.ReadStringByKey("date", json)
+                        ?? throw new ArgumentException("Missing 'date' in request");
+                    var mealIds = JsonHelper.ReadIntArrayByKey("mealIds", json);
+                    var order = _controller.AddOrder(studentId, date, mealIds);
+                    await writer.WriteLineAsync(JsonHelper.Serialize(order));
+                } catch (Exception ex) {
+                    await SendException(ex, writer);
+                }
+                break;
+            }
+
+            case "delete_order": {
+                try {
+                    var id = JsonHelper.ReadIntByKey("id", json)
+                        ?? throw new ArgumentException("Missing 'id' in request");
+                    _controller.DeleteOrder(id);
+                    await SendResponse(200, "Order deleted successfully", writer);
+                } catch (Exception ex) {
+                    await SendException(ex, writer);
+                }
+                break;
+            }
+
+            case "exit":
+                return;
+
+            case "stop":
+                StopCommand?.Invoke();
+                return;
+
+            default:
+                await SendResponse(400, $"Unknown command: '{command}'", writer);
+                break;
+        }
+    }
+
+    private static string SerializeList<T>(List<T> items) where T : IBaseJsonable {
+        if (items.Count == 0) return "[]";
+        return JsonHelper.SerializeJsonList(items.Cast<IBaseJsonable>());
+    }
+
+    private static async Task SendResponse(int code, string message, StreamWriter writer) {
+        await writer.WriteLineAsync(JsonHelper.Serialize(new ServerResponse(code, message)));
+    }
+
+    private static async Task SendException(Exception ex, StreamWriter writer) {
+        if (ex is BaseException baseEx) {
+            await SendResponse(baseEx.Code, baseEx.Message, writer);
+            return;
+        }
+        Console.WriteLine($"ERROR: {ex.GetType().Name}: {ex.Message}");
+        Console.WriteLine($"STACK TRACE: {ex.StackTrace}");
+        await SendResponse(400, $"Unknown error: {ex.Message}", writer);
+    }
+
+    private static string GetHelpText() => """
+        КОМАНДА              ПАРАМЕТРЫ                                                                ОПИСАНИЕ
+        ────────────────────────────────────────────────────────────────────────────────────────────────────────
+        get_meals            —                                                                        Получить список всех блюд
+        get_meal_by_id       {"id": <id>}                                                             Получить блюдо по ID
+        add_meal             {"Title": "<Title>", "Cost": <Cost>}                                     Добавить новое блюдо
+        delete_meal          {"id": <id>}                                                             Удалить блюдо по ID
+        get_orders           —                                                                        Получить список всех заказов
+        get_order_by_id      {"id": <id>}                                                             Получить заказ по ID
+        add_order            {"StudentID": "<id>", "date": "<date>", "mealIds": [<id1>, <id2>]}      Добавить новый заказ
+        delete_order         {"id": <id>}                                                             Удалить заказ по ID
+        exit                 —                                                                        Отключиться от сервера
+        stop                 —                                                                        Остановить сервер
+        """;
+}
